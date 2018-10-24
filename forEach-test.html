@@ -1,4 +1,5 @@
 <script src="tinytest.js"></script>
+
 <script>
 // Example 1: Should run the callback function n times (n = number of elements in the array)
 // forEach([1,2,3,4],function() {
@@ -20,9 +21,15 @@
 //	console.log(originalArray);
 // });
 
-function forEach(arr, callback) {
+function forEach(arr, callback, configurableThisObject) {
+	var forEachCallback = callback;
+
+	if(configurableThisObject) {
+		forEachCallback = callback.bind(configurableThisObject);
+	}
+
 	for(var i = 0; i < arr.length; i++) {
-		callback(arr[i], i, arr);
+		forEachCallback(arr[i], i, arr);
 	}
 }
 
@@ -49,6 +56,11 @@ tests({
 		forEach(testArr, function(num, i, originalArr) {
 			eq(originalArr, testArr);
 		});
+	},
+	'It should accept a configurable this object.': function() {
+		forEach([1], function() {
+			eq(this.description, 'Configurable this object');
+		}, {description: 'Configurable this object'});
 	}
 });
 </script>
